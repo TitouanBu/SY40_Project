@@ -1,0 +1,8 @@
+Gestion d'un parking :
+- Deux types d'usagers :
+	- Abonnés (émet un signal pour rentrer dans le parking)
+	- Non Abonnés (tickets pour rentrer)
+- Parking de N places réservées aux abonnés, M places disponibles pour non abonnés. 
+- S'il n'y a plus de place réservées aux abonnés (N), un abonné peut prendre une place M.
+- Zone de débordement à partir de 18h qui couvre exclusivement des places non abonnés. On libère des places d'heure en heure.
+- Entrée et sortie par la même voie, feu bicolore pour gérer l'accessibilité à la barrière.
