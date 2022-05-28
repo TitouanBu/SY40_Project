@@ -16,7 +16,12 @@ bool activeDebug=false;	//Variable pour afficher ou enlever les debugs
 
 #define NUM_P_ABONNE 10	//Nombre de places réservées aux abonnés
 #define NUM_P_NABONNE 10	//Nombre de places pour non abonnés
+#define numAbonne 30	//Nombre de thread abonnés
+#define numNAbonne 30	//Nombre de thread non abonnés
 /*--------------------------------------------------*/
+
+pthread_t tidAbonne[numAbonne],tidNonAbonne[numNAbonne];
+pthread_mutex_t mutex;
 
 //Fonction pour debug du code
 void debug (char *message)
@@ -36,19 +41,6 @@ void *fonc_abonne(void *n)
 			(int) n,pthread_self());
 }
 
-//Fonction pour créer N abonne(s)
-void create_abonne(int N)
-{
-	pthread_t idAbonne[N];
-	for (int i = 0; i < N; ++i)
-	{
-		pthread_create(idAbonne+i,0,fonc_abonne, (void *) i);
-	}
-
-	for(int i=0;i<N;++i)
-        	pthread_join(idAbonne[i],NULL);
-}
-
 //Fonction executee par chaque non-abonne
 void *fonc_non_abonne(void *n)
 {
@@ -57,16 +49,29 @@ void *fonc_non_abonne(void *n)
 }
 
 //Fonction pour créer N abonne(s)
-void create_non_abonne(int N)
+void create_threads(int Abonne, int NonAbonne)
 {
-	pthread_t idNonAbonne[N];
-	for (int i = 0; i < N; ++i)
+	for (int i = 0; i < Abonne; ++i)
 	{
-		pthread_create(idNonAbonne+i,0,fonc_non_abonne, (void *) i);
+		pthread_create(tidAbonne+i,0,fonc_abonne, (void *) i);
+		//usleep(100000);
 	}
 
-	for(int i=0;i<N;++i)
-        	pthread_join(idNonAbonne[i],NULL);
+	for (int i = 0; i < Abonne; ++i)
+	{
+		pthread_create(tidNonAbonne+i,0,fonc_non_abonne, (void *) i);
+		//usleep(100000);
+	}
+}
+
+//Fonction pour créer N abonne(s)
+void end_threads(int Abonne, int NonAbonne)
+{
+	for(int i=0;i<Abonne;++i)
+        	pthread_join(tidAbonne[i],NULL);
+
+	for(int i=0;i<NonAbonne;++i)
+        	pthread_join(tidNonAbonne[i],NULL);
 }
 
 /*--------------------------------------------------*/

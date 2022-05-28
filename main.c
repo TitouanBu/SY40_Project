@@ -2,19 +2,21 @@
 
 int main(int argc, char const *argv[])
 {
-	int nombre_abonne,nombre_n_abonne;
-	if(argc < 2){
-		nombre_abonne = 10;
-		nombre_n_abonne = 10;
-	}else if(argc == 2){
-		nombre_abonne = atoi(argv[1]);
-		nombre_n_abonne = atoi(argv[1]);
-	}else if (argc>2){
-		nombre_abonne = atoi(argv[1]);
-		nombre_n_abonne = atoi(argv[2]);
+	int duree=10;
+
+	if (argc > 2)
+	{
+		duree = atoi(argv[1]);
 	}
 
-	create_abonne(nombre_abonne);
-	create_non_abonne(nombre_n_abonne);
+	create_threads(numAbonne,numNAbonne);
+	end_threads(numAbonne,numNAbonne);
+
+	for (int i = 0; i <= 24*6; ++i)
+	{
+		usleep(1000000);
+		printf("\r %d minutes ecoulees ...",i*10);
+			fflush(stdout);
+	}
 	return 0;
 }
