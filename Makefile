@@ -1,3 +1,5 @@
+all : prog
+
 prog : main.o CodingFunctions.o
 	gcc -o prog main.o CodingFunctions.o -pthread
 
@@ -6,3 +8,9 @@ main.o : main.c
 
 CodingFunctions.o : CodingFunctions.c
 	gcc -o CodingFunctions.o -c CodingFunctions.c -pthread
+
+clean : 
+	rm -rf *.o
+
+mrproper : clean
+	rm -rf prog
