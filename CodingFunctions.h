@@ -21,7 +21,7 @@
 #define NUM_P_NABONNE 6 //Nombre de places pour non abonnés
 #define NUM_P NUM_P_NABONNE + NUM_P_ABONNE //Nombre de place totale
 #define NB_ABONNE 2	//Nombre de thread abonnés
-#define NB_NABONNE 3 //Nombre de thread non abonnés
+#define NB_NABONNE 4 //Nombre de thread non abonnés
 #define NB_USAGER NB_ABONNE + NB_NABONNE //Nombre de thread
 /*--------------------------------------------------*/
 

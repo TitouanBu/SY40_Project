@@ -1,38 +1,107 @@
 #include "CodingFunctions.h"
 
 pthread_mutex_t mutex;
-pthread_cond_t patienter;
+pthread_cond_t patienterInt, patienterExt;
 pthread_t tidUsager[NB_USAGER];
 
-int NbUsagerAttente = 0;
+int countB = 0;
+int nbAttInt = 0;
+int nbAttExt = 0;
+PlaceParking parking[NUM_P];
 
 /*  Fonctions thread synchronisation
 
-	pthread_cond_wait (&patienter, &mutex);
-	pthread_cond_signal (&patienter);
+	pthread_cond_wait(&patienter, &mutex);
+	pthread_cond_signal(&patienter);
 	
 	pthread_mutex_lock(&mutex);
 	pthread_mutex_unlock(&mutex);
 */
 
-//Fonction executee par chaque abonne
-void *fonc_abonne(int id_p)
+void usagerInterParking(Usager* u_p)
 {
-	Usager u = initAbonne(id_p);
-	printf("\n\nCréation Thread Abonne n°%d", u.id);
-	printUsager(u);
-	/*
-	pthread_cond_wait (&patienter, &mutex);
-	printf("\nUsager %d ---> accède à la barrière", u_p->id);
-	*/
+	if(countB > 0)
+	{
+		nbAttInt++;
+		printf("\nUsager %d (INT) ---> patiente", u_p->id);
+		pthread_cond_wait(&patienterInt, &mutex);
+		nbAttInt--;
+	}
+
+	countB++; // accède à la barrière
+	printf("\nUsager %d (INT) ---> accède à la barrière", u_p->id);
+	sleep(2); //utilise un ticket ou le code
+	countB--; // s'éloigne de la barrière
+	printf("\nUsager %d (INT) ---> sort du parking", u_p->id);
+
+	printf("\nnbAttInt = %d", nbAttInt);
+	printf("\nnbAttExt = %d", nbAttExt);
+	printf("\ncountB = %d", countB);
+
+	if(nbAttInt > 0)
+	{
+		pthread_cond_signal(&patienterInt);
+	}else{
+		if(nbAttExt > 0)
+		{
+			pthread_cond_signal(&patienterExt);
+		}
+	}
 }
 
-//Fonction executee par chaque non abonne
-void *fonc_non_abonne(int id_p)
+void usagerExterParking(Usager* u_p)
 {
-	Usager u = initNonAbonne(id_p);
-	printf("\n\nCréation Thread Abonne n°%d", u.id);
-	printUsager(u);
+	if(countB > 0)
+	{
+		nbAttExt++;
+		printf("\nUsager %d (EXT) ---> patiente", u_p->id);
+		pthread_cond_wait(&patienterExt, &mutex);
+		nbAttExt--;
+	}
+
+	countB++; // accède à la barrière
+	printf("\nUsager %d (EXT) ---> accède à la barrière", u_p->id);
+	sleep(2); //utilise un ticket ou le code
+	countB--;
+	printf("\nUsager %d (EXT) ---> entre dans le parking", u_p->id);
+
+
+	printf("\nnbAttInt = %d", nbAttInt);
+	printf("\nnbAttExt = %d", nbAttExt);
+	printf("\ncountB = %d", countB);
+	if(nbAttInt > 0)
+	{
+		pthread_cond_signal(&patienterInt);
+	}else{
+		if(nbAttExt > 0)
+		{
+			pthread_cond_signal(&patienterExt);
+		}
+	}
+
+}
+
+//Fonction executee par chaque abonne
+void *fonc_usager(int id_p)
+{
+	Usager u;
+	if(id_p < NB_ABONNE){
+		u = initAbonne(id_p);
+		//printf("\nCréation Thread Abonne n°%d", u.id);
+	}else{
+		u = initNonAbonne(id_p);
+		//printf("\nCréation Thread non-Abonne n°%d", u.id);
+	}
+
+	//pthread_mutex_lock(&mutex);
+	usagerExterParking(&u);
+	//pthread_mutex_unlock(&mutex);
+
+	sleep(1); //temps de stationnement sur la place de parking
+
+	//pthread_mutex_lock(&mutex);
+	usagerInterParking(&u);
+	//pthread_mutex_unlock(&mutex);
 }
 
 
@@ -41,8 +110,7 @@ void create_threads()
 {
 	for (long i = 0; i < NB_ABONNE; ++i)
 	{
-		Usager u = initAbonne(i);
-		if(pthread_create(tidUsager+i,0,(void *(*)())fonc_abonne, (void *) i) == -1)
+		if(pthread_create(tidUsager+i,0,(void *(*)())fonc_usager, (void *) i) == -1)
 		{
 			debug("Creation thread abonne");
 		}	
@@ -51,8 +119,7 @@ void create_threads()
 
 	for (long i = NB_ABONNE; i < NB_USAGER; ++i)
 	{
-		Usager u = initNonAbonne(i);
-		if(pthread_create(tidUsager+i,0,(void *(*)())fonc_non_abonne, (void *) i) == -1)
+		if(pthread_create(tidUsager+i,0,(void *(*)())fonc_usager, (void *) i) == -1)
 		{
 			debug("Creation thread non-abonne");
 		}
@@ -93,13 +160,11 @@ int main(int argc, char const *argv[])
 	sigaction(SIGINT, &sa, NULL);
 
 	// Initialisation Parking //
-	PlaceParking parking[NUM_P];
 	initParking(parking);
+	//printParking(parking);
 
 	create_threads();
 	end_threads();
-
-
 /*
 	printf("\n\n");
 	for (int i = 0; i <= 24*6; ++i)
@@ -110,6 +175,6 @@ int main(int argc, char const *argv[])
 	}
 */
 
-	printf("\n\nFIN PROG\n\n");
+	printf("\nFIN\n");
 	return 0;
 }

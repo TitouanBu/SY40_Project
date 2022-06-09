@@ -16,7 +16,7 @@ void debug (char *message)
 /*------ Fonctions pour gestion de SIGINT ------*/
 
 void handle_sigint(int sig){
-	//end_threads(NB_ABONNE,NB_NABONNE);
+	//end_threads();
 	printf("\n\n----- Fin Programme! -----\n");
 	exit(0);
 }
