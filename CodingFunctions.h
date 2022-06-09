@@ -20,12 +20,12 @@
 #define NUM_P_ABONNE 4	//Nombre de places réservées aux abonnés
 #define NUM_P_NABONNE 6 //Nombre de places pour non abonnés
 #define NUM_P NUM_P_NABONNE + NUM_P_ABONNE //Nombre de place totale
-#define NB_ABONNE 5	//Nombre de thread abonnés
-#define NB_NABONNE 10	//Nombre de thread non abonnés
+#define NB_ABONNE 2	//Nombre de thread abonnés
+#define NB_NABONNE 3 //Nombre de thread non abonnés
+#define NB_USAGER NB_ABONNE + NB_NABONNE //Nombre de thread
 /*--------------------------------------------------*/
 
-pthread_t tidAbonne[NB_ABONNE], tidNonAbonne[NB_NABONNE];
-pthread_mutex_t mutex;
+
 
 /*------------- Structures -------------*/
 
@@ -50,17 +50,7 @@ void debug (char *message);
 
 /*------ Fonctions pour gestion des threads ------*/
 
-//Fonction executee par chaque abonne
-void *fonc_abonne(void *n);
 
-//Fonction executee par chaque non-abonne
-void *fonc_non_abonne(void *n);
-
-//Fonction pour créer N abonne(s)
-void create_threads(int Abonne, int NonAbonne);
-
-//Fonction pour créer N abonne(s)
-void end_threads(int Abonne, int NonAbonne);
 
 
 /*------ Fonction pour la gestion de SIGINT ------*/
@@ -69,8 +59,11 @@ void handle_sigint(int sig);
 
 /*------ Fonctions pour les Usagers ------*/
 
-// initialiser un Usager
-Usager initUsager(int id_p);
+// initialiser un abonne
+Usager initAbonne(int id_p);
+
+// initialiser un non abonne
+Usager initNonAbonne(int id_p);
 
 // modifier les caractéristiques d'un Usager
 void modifUsager(Usager* u_p, bool isAbonne_p, int stationnement_p);

@@ -1,5 +1,75 @@
 #include "CodingFunctions.h"
 
+pthread_mutex_t mutex;
+pthread_cond_t patienter;
+pthread_t tidUsager[NB_USAGER];
+
+int NbUsagerAttente = 0;
+
+/*  Fonctions thread synchronisation
+
+	pthread_cond_wait (&patienter, &mutex);
+	pthread_cond_signal (&patienter);
+	
+	pthread_mutex_lock(&mutex);
+	pthread_mutex_unlock(&mutex);
+*/
+
+//Fonction executee par chaque abonne
+void *fonc_abonne(int id_p)
+{
+	Usager u = initAbonne(id_p);
+	printf("\n\nCréation Thread Abonne n°%d", u.id);
+	printUsager(u);
+	/*
+	pthread_cond_wait (&patienter, &mutex);
+	printf("\nUsager %d ---> accède à la barrière", u_p->id);
+	*/
+}
+
+//Fonction executee par chaque non abonne
+void *fonc_non_abonne(int id_p)
+{
+	Usager u = initNonAbonne(id_p);
+	printf("\n\nCréation Thread Abonne n°%d", u.id);
+	printUsager(u);
+}
+
+
+//Fonction pour créer N abonne(s)
+void create_threads()
+{
+	for (long i = 0; i < NB_ABONNE; ++i)
+	{
+		Usager u = initAbonne(i);
+		if(pthread_create(tidUsager+i,0,(void *(*)())fonc_abonne, (void *) i) == -1)
+		{
+			debug("Creation thread abonne");
+		}	
+		usleep(10000);
+	}
+
+	for (long i = NB_ABONNE; i < NB_USAGER; ++i)
+	{
+		Usager u = initNonAbonne(i);
+		if(pthread_create(tidUsager+i,0,(void *(*)())fonc_non_abonne, (void *) i) == -1)
+		{
+			debug("Creation thread non-abonne");
+		}
+		usleep(10000);
+	}
+}
+
+//Fonction pour créer N abonne(s)
+void end_threads()
+{
+	for(int i=0;i<NB_ABONNE;++i)
+        	pthread_join(tidUsager[i],NULL);
+
+	for(int i=NB_ABONNE;i<NB_USAGER;++i)
+        	pthread_join(tidUsager[i],NULL);
+}
+
 
 int main(int argc, char const *argv[])
 {
@@ -25,19 +95,11 @@ int main(int argc, char const *argv[])
 	// Initialisation Parking //
 	PlaceParking parking[NUM_P];
 	initParking(parking);
-	
-	Usager user0 = initUsager(0);
-	Usager user1 = initUsager(1);
-	modifUsager(&user0, true, -1);
-	modifUsager(&user1, false, -1);
-	seGarer(&user0, &parking[7]);
-	seGarer(&user1, &parking[8]);
 
-	printParking(parking);
-	
+	create_threads();
+	end_threads();
 
 
-	//create_threads(NB_ABONNE,NB_NONABONNE);
 /*
 	printf("\n\n");
 	for (int i = 0; i <= 24*6; ++i)
@@ -48,7 +110,6 @@ int main(int argc, char const *argv[])
 	}
 */
 
-	//end_threads(NB_ABONNE,NB_NABONNE);
-	printf("\n\n");
+	printf("\n\nFIN PROG\n\n");
 	return 0;
 }

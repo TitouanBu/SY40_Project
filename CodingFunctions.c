@@ -11,59 +11,30 @@ void debug (char *message)
 
 /*------Fonctions pour gestion des threads ------*/
 
-//Fonction executee par chaque abonne
-void *fonc_abonne(void *n)
-{
-	printf("\nAbonne numero %ld\n",(long) n);
-	printf("TID : %ld\n",pthread_self());
-	
-}
 
-//Fonction executee par chaque non-abonne
-void *fonc_non_abonne(void *n)
-{
-	printf("\nNon-Abonne numero %ld\n",(long) n);
-	printf("TID : %ld\n",pthread_self());
-}
-
-//Fonction pour créer N abonne(s)
-void create_threads(int Abonne, int NonAbonne)
-{
-	for (long i = 0; i < Abonne; ++i)
-	{
-		pthread_create(tidAbonne+i,0,fonc_abonne, (void *) i);
-		usleep(10000);
-	}
-
-	for (long i = 0; i < NonAbonne; ++i)
-	{
-		pthread_create(tidNonAbonne+i,0,fonc_non_abonne, (void *) i);
-		usleep(10000);
-	}
-}
-
-//Fonction pour créer N abonne(s)
-void end_threads(int Abonne, int NonAbonne)
-{
-	for(int i=0;i<Abonne;++i)
-        	pthread_join(tidAbonne[i],NULL);
-
-	for(int i=0;i<NonAbonne;++i)
-        	pthread_join(tidNonAbonne[i],NULL);
-}
 
 /*------ Fonctions pour gestion de SIGINT ------*/
 
 void handle_sigint(int sig){
-	end_threads(NB_ABONNE,NB_NABONNE);
+	//end_threads(NB_ABONNE,NB_NABONNE);
 	printf("\n\n----- Fin Programme! -----\n");
 	exit(0);
 }
 
 /*------ Fonctions pour les Usagers ------*/
 
-// initialiser un Usager
-Usager initUsager(int id_p)
+// initialiser un abonne
+Usager initAbonne(int id_p)
+{
+	Usager u;
+	u.id = id_p;
+	u.isAbonne = true;
+	u.stationnement = -1;
+	return u;
+}
+
+// initialiser un non abonne
+Usager initNonAbonne(int id_p)
 {
 	Usager u;
 	u.id = id_p;
@@ -82,7 +53,7 @@ void modifUsager(Usager* u_p, bool isAbonne_p, int stationnement_p)
 // afficher les caractéristiques d'un Usager
 void printUsager(Usager u_p)
 {
-	printf("\n\nUsager n°%d :", u_p.id);
+	printf("\nUsager n°%d :", u_p.id);
 
 	if(u_p.isAbonne){
 		printf("\n\tAbonne : Oui");
