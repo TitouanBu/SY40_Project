@@ -85,17 +85,19 @@ PlaceParking initPlaceParking(int id_p, bool isAbonne_p, int idUsager_p)
 void initParking(PlaceParking* parking_p)
 {
 	int i = 0;
-	for(i = 0; i < NUM_P_NABONNE; i++)
+	// initialisation au début du parking des places abonnés
+	for(i = 0; i < NUM_P_ABONNE; i++)
 	{
 		//printf("\nInitialisation place n°%d",i);
-		PlaceParking place = initPlaceParking(i, false, i);
+		PlaceParking place = initPlaceParking(i, true, -1);
 		parking_p[i] = place;
 	}
 
-	for(i = NUM_P_NABONNE; i < NUM_P; i++)
+	// initialisation en fin de parking des places non-abonnés
+	for(i = NUM_P_ABONNE; i < NUM_P; i++)
 	{
 		//printf("\nInitialisation place n°%d",i);
-		PlaceParking place = initPlaceParking(i, true, i);
+		PlaceParking place = initPlaceParking(i, false, -1);
 		parking_p[i] = place;
 	}
 }
@@ -104,12 +106,25 @@ void initParking(PlaceParking* parking_p)
 void printPlaceParking(PlaceParking place_p)
 {
 	if(place_p.idUsager == -1){
-		printf("   |");
-	}else{
-		if(place_p.idUsager < 10){
-			printf("U0%d|", place_p.idUsager);
+		if(place_p.isAbonne){
+			printf("   '|");
 		}else{
-			printf("U%d|", place_p.idUsager);
+			printf("    |");
+		}
+		
+	}else{
+		if(place_p.isAbonne){
+			if(place_p.idUsager < 10){
+				printf("U0%d'|", place_p.idUsager);
+			}else{
+				printf("U%d'|", place_p.idUsager);
+			}
+		}else{
+			if(place_p.idUsager < 10){
+				printf("U0%d |", place_p.idUsager);
+			}else{
+				printf("U%d |", place_p.idUsager);
+			}
 		}
 	}
 
@@ -132,6 +147,7 @@ void printPlaceParking(PlaceParking place_p)
 // afficher les caractéristiques de tout le parking
 void printParking(PlaceParking* parking_p)
 {
+	system("clear");
 	int count = 0;
 	printf("\n  |");
 	for(int i = 0; i < NUM_P; i++)
@@ -175,11 +191,13 @@ int stationner(Usager* usager_p, PlaceParking* place_p)
 // Gere l'affichage des messages d'actions
 void printAction(char* message_p, int id_p, int pos_p)
 {
-	if(pos_p == 0){
-		printf("\n  U%d : %s", id_p, message_p);
-	}
+	if(AFFICHE_ACTION)
+	{
+		if(pos_p == 0)
+			printf("\n  U%d : %s", id_p, message_p);
 
-	if(pos_p == 1){
-		printf("\n\t\t\t\t\tU%d : %s", id_p, message_p);
+		if(pos_p == 1)
+			printf("\n\t\t\t\t\tU%d : %s", id_p, message_p);
 	}
+	
 }
