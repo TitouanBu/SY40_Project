@@ -17,7 +17,7 @@ void debug (char *message)
 
 void handle_sigint(int sig){
 	//end_threads();
-	printf("\n\n----- Fin Programme! -----\n");
+	printf("\n\n----- Fin Simulation! -----\n");
 	exit(0);
 }
 
@@ -148,4 +148,16 @@ int seGarer(Usager* usager_p, PlaceParking* place_p)
 		}
 	}
 	return 1;
+}
+
+// Gere l'affichage des messages d'actions
+void printAction(char* message_p, int id_p, int pos_p)
+{
+	if(pos_p == 0){
+		printf("\n  U%d : %s", id_p, message_p);
+	}
+
+	if(pos_p == 1){
+		printf("\n\t\t\t\t\tU%d : %s", id_p, message_p);
+	}
 }

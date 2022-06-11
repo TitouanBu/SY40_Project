@@ -20,65 +20,70 @@ PlaceParking parking[NUM_P];
 
 void usagerInterParking(Usager* u_p)
 {
+	pthread_mutex_unlock(&mutex);
 	if(countB > 0)
 	{
 		nbAttInt++;
-		printf("\nUsager %d (INT) ---> patiente", u_p->id);
+		printAction("Patiente", u_p->id, 1);
 		pthread_cond_wait(&patienterInt, &mutex);
 		nbAttInt--;
 	}
 
 	countB++; // accède à la barrière
-	printf("\nUsager %d (INT) ---> accède à la barrière", u_p->id);
+	printAction("Accede à la barriere", u_p->id, 1);
+	pthread_mutex_unlock(&mutex);
 	sleep(2); //utilise un ticket ou le code
+	pthread_mutex_lock(&mutex);
 	countB--; // s'éloigne de la barrière
-	printf("\nUsager %d (INT) ---> sort du parking", u_p->id);
-
-	printf("\nnbAttInt = %d", nbAttInt);
-	printf("\nnbAttExt = %d", nbAttExt);
-	printf("\ncountB = %d", countB);
+	printAction("Sort du parking", u_p->id, 1);
 
 	if(nbAttInt > 0)
 	{
+		pthread_mutex_unlock(&mutex);
 		pthread_cond_signal(&patienterInt);
 	}else{
 		if(nbAttExt > 0)
 		{
+			pthread_mutex_unlock(&mutex);
 			pthread_cond_signal(&patienterExt);
+		}else{
+			pthread_mutex_unlock(&mutex);
 		}
 	}
 }
 
 void usagerExterParking(Usager* u_p)
 {
+	pthread_mutex_lock(&mutex);
 	if(countB > 0)
 	{
 		nbAttExt++;
-		printf("\nUsager %d (EXT) ---> patiente", u_p->id);
+		printAction("Patiente", u_p->id, 0);
 		pthread_cond_wait(&patienterExt, &mutex);
 		nbAttExt--;
 	}
 
 	countB++; // accède à la barrière
-	printf("\nUsager %d (EXT) ---> accède à la barrière", u_p->id);
-	sleep(2); //utilise un ticket ou le code
+	printAction("Accede à la barriere", u_p->id, 0);
+	pthread_mutex_unlock(&mutex);
+	sleep(2); //temps pour passer la barriere
+	pthread_mutex_lock(&mutex);
 	countB--;
-	printf("\nUsager %d (EXT) ---> entre dans le parking", u_p->id);
+	printAction("Entre dans le parking", u_p->id, 0);
 
-
-	printf("\nnbAttInt = %d", nbAttInt);
-	printf("\nnbAttExt = %d", nbAttExt);
-	printf("\ncountB = %d", countB);
 	if(nbAttInt > 0)
 	{
+		pthread_mutex_unlock(&mutex);
 		pthread_cond_signal(&patienterInt);
 	}else{
 		if(nbAttExt > 0)
 		{
+			pthread_mutex_unlock(&mutex);
 			pthread_cond_signal(&patienterExt);
+		}else{
+			pthread_mutex_unlock(&mutex);
 		}
 	}
-
 }
 
 //Fonction executee par chaque abonne
@@ -93,15 +98,11 @@ void *fonc_usager(int id_p)
 		//printf("\nCréation Thread non-Abonne n°%d", u.id);
 	}
 
-	//pthread_mutex_lock(&mutex);
 	usagerExterParking(&u);
-	//pthread_mutex_unlock(&mutex);
 
-	sleep(1); //temps de stationnement sur la place de parking
+	sleep(5); //temps de stationnement sur la place de parking
 
-	//pthread_mutex_lock(&mutex);
 	usagerInterParking(&u);
-	//pthread_mutex_unlock(&mutex);
 }
 
 
@@ -137,7 +138,6 @@ void end_threads()
         	pthread_join(tidUsager[i],NULL);
 }
 
-
 int main(int argc, char const *argv[])
 {
 	
@@ -160,11 +160,22 @@ int main(int argc, char const *argv[])
 	sigaction(SIGINT, &sa, NULL);
 
 	// Initialisation Parking //
-	initParking(parking);
+	//initParking(parking);
 	//printParking(parking);
+
+	printf("\n\n\tExterieur Parking\t\tInterieur Parking\n");
+
 
 	create_threads();
 	end_threads();
+
+
+
+	printf("\n\n----- Fin Simulation! -----\n");
+	return 0;
+}
+
+
 /*
 	printf("\n\n");
 	for (int i = 0; i <= 24*6; ++i)
@@ -174,7 +185,3 @@ int main(int argc, char const *argv[])
 		fflush(stdout);
 	}
 */
-
-	printf("\nFIN\n");
-	return 0;
-}

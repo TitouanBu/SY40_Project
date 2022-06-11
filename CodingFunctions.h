@@ -89,4 +89,8 @@ void printParking(PlaceParking* parking_p);
 // les conditions sont respectées
 int seGarer(Usager* usager_p, PlaceParking* place_p);
 
+// Gere l'affichage des messages d'actions
+void printAction(char* message_p, int id_p, int pos_p);
+
+
 #endif
