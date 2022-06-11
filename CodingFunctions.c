@@ -72,12 +72,12 @@ void printUsager(Usager u_p)
 /*------ Fonctions pour le parking ------*/
 
 // initialiser une place de parking
-PlaceParking initPlaceParking(int id_p, bool isAbonne_p, bool isLibre_p)
+PlaceParking initPlaceParking(int id_p, bool isAbonne_p, int idUsager_p)
 {
 	PlaceParking pp;
 	pp.id = id_p;
 	pp.isAbonne = isAbonne_p;
-	pp.isLibre = isLibre_p;
+	pp.idUsager = idUsager_p;
 	return pp;
 }
 
@@ -88,14 +88,14 @@ void initParking(PlaceParking* parking_p)
 	for(i = 0; i < NUM_P_NABONNE; i++)
 	{
 		//printf("\nInitialisation place n°%d",i);
-		PlaceParking place = initPlaceParking(i, false, true);
+		PlaceParking place = initPlaceParking(i, false, i);
 		parking_p[i] = place;
 	}
 
 	for(i = NUM_P_NABONNE; i < NUM_P; i++)
 	{
 		//printf("\nInitialisation place n°%d",i);
-		PlaceParking place = initPlaceParking(i, true, true);
+		PlaceParking place = initPlaceParking(i, true, i);
 		parking_p[i] = place;
 	}
 }
@@ -103,46 +103,68 @@ void initParking(PlaceParking* parking_p)
 // // afficher les caractéristiques d'une place de parking
 void printPlaceParking(PlaceParking place_p)
 {
-	printf("\n\nPlace n°%d :", place_p.id);
+	if(place_p.idUsager == -1){
+		printf("   |");
+	}else{
+		if(place_p.idUsager < 10){
+			printf("U0%d|", place_p.idUsager);
+		}else{
+			printf("U%d|", place_p.idUsager);
+		}
+	}
 
+
+	/*
+	printf("\n\nPlace n°%d :", place_p.id);
 	if(place_p.isAbonne){
 		printf("\n\tPlace Abonne : Oui");
 	}else{
 		printf("\n\tPlace Abonne : Non");
 	}
-
 	if(place_p.isLibre){
 		printf("\n\tEtat : Libre");
 	}else{
 		printf("\n\tEtat : Occupe");
 	}
+	*/
 }
 
 // afficher les caractéristiques de tout le parking
 void printParking(PlaceParking* parking_p)
 {
+	int count = 0;
+	printf("\n  |");
 	for(int i = 0; i < NUM_P; i++)
 	{
 		printPlaceParking(parking_p[i]);
+		if(count == 9 && i < NUM_P-1){
+			count = 0;
+			printf("\n  |");
+		}else{
+			count++;
+		}
+		
 	}
 }
 
 // Permet à un Usager de se garer sur une place de parking si
 // les conditions sont respectées
-int seGarer(Usager* usager_p, PlaceParking* place_p)
+int stationner(Usager* usager_p, PlaceParking* place_p)
 {
+	//si usager n'est pas déjà stationner
 	if(usager_p->stationnement != -1)
 	{
-		printf("\nUsager n°%d est déjà garer!\n", usager_p->id);
+		//Usager deja garer, arret de la fonction
+		//printf("\nUsager n°%d est déjà garer!\n", usager_p->id);
 		return 1;
 	}
 
 	//si la place est libre
-	if(place_p->isLibre)
+	if(place_p->idUsager == -1)
 	{
 		// si place abonne, on verifie que usager est abonne
 		if(!(place_p->isAbonne && !usager_p->isAbonne)){
-			place_p->isLibre = false;
+			place_p->idUsager = usager_p->id;
 			usager_p->stationnement = place_p->id;
 			return 0;
 		}

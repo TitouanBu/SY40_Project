@@ -17,14 +17,13 @@
 #define true  1
 #define DEBUG true //Variable pour afficher ou non les debugs
 
-#define NUM_P_ABONNE 4	//Nombre de places réservées aux abonnés
-#define NUM_P_NABONNE 6 //Nombre de places pour non abonnés
+#define NUM_P_ABONNE 15	//Nombre de places réservées aux abonnés
+#define NUM_P_NABONNE 25 //Nombre de places pour non abonnés
 #define NUM_P NUM_P_NABONNE + NUM_P_ABONNE //Nombre de place totale
 #define NB_ABONNE 2	//Nombre de thread abonnés
 #define NB_NABONNE 4 //Nombre de thread non abonnés
 #define NB_USAGER NB_ABONNE + NB_NABONNE //Nombre de thread
 /*--------------------------------------------------*/
-
 
 
 /*------------- Structures -------------*/
@@ -40,7 +39,7 @@ typedef struct PlaceParking
 {
 	int id; //numero de la place
 	bool isAbonne; //true si place réservé aux abonnés
-	bool isLibre; //true si place est libre
+	int idUsager; //id de l'usager sur la place (-1 si aucun)
 }PlaceParking;
 
 /*--------------------------------------*/
@@ -49,8 +48,6 @@ typedef struct PlaceParking
 void debug (char *message);
 
 /*------ Fonctions pour gestion des threads ------*/
-
-
 
 
 /*------ Fonction pour la gestion de SIGINT ------*/
@@ -74,7 +71,7 @@ void printUsager(Usager u_p);
 /*------ Fonctions pour le parking ------*/
 
 // initialiser une place de parking
-PlaceParking initPlaceParking(int id_p, bool isAbonne_p, bool isLibre_p);
+PlaceParking initPlaceParking(int id_p, bool isAbonne_p, int idUsager_p);
 
 // initialiser un parking
 void initParking(PlaceParking* parking_p);
@@ -87,7 +84,7 @@ void printParking(PlaceParking* parking_p);
 
 // Permet à un Usager de se garer sur une place de parking si
 // les conditions sont respectées
-int seGarer(Usager* usager_p, PlaceParking* place_p);
+int stationner(Usager* usager_p, PlaceParking* place_p);
 
 // Gere l'affichage des messages d'actions
 void printAction(char* message_p, int id_p, int pos_p);

@@ -4,6 +4,7 @@ pthread_mutex_t mutex;
 pthread_cond_t patienterInt, patienterExt;
 pthread_t tidUsager[NB_USAGER];
 
+
 int countB = 0;
 int nbAttInt = 0;
 int nbAttExt = 0;
@@ -105,7 +106,6 @@ void *fonc_usager(int id_p)
 	usagerInterParking(&u);
 }
 
-
 //Fonction pour créer N abonne(s)
 void create_threads()
 {
@@ -138,6 +138,20 @@ void end_threads()
         	pthread_join(tidUsager[i],NULL);
 }
 
+int circuler(Usager* usager_p)
+{
+	if(usager_p->stationnement == -1)
+	{
+		//Usager n'est pas garer, arret de la fonction
+		//printf("\nUsager n°%d n'est pas gare!\n", usager_p->id);
+		return 1;
+	}
+
+	parking[usager_p->stationnement].idUsager = -1;
+	usager_p->stationnement = -1;
+	return 0;
+}
+
 int main(int argc, char const *argv[])
 {
 	
@@ -160,15 +174,29 @@ int main(int argc, char const *argv[])
 	sigaction(SIGINT, &sa, NULL);
 
 	// Initialisation Parking //
-	//initParking(parking);
-	//printParking(parking);
+	initParking(parking);
 
+	Usager u8 = initAbonne(8);
+	modifUsager(&u8, true, 8);
+	Usager u14 = initAbonne(14);
+	modifUsager(&u14, true, 14);
+	Usager u22 = initAbonne(22);
+	modifUsager(&u22, false, 39);
+
+	circuler(&u8);
+	circuler(&u14);
+	circuler(&u22);
+	printParking(parking);
+	printf("\n\n");
+	
+	stationner(&u8, &parking[15]);
+	printParking(parking);
+
+/*
 	printf("\n\n\tExterieur Parking\t\tInterieur Parking\n");
-
-
 	create_threads();
 	end_threads();
-
+*/
 
 
 	printf("\n\n----- Fin Simulation! -----\n");
