@@ -10,5 +10,5 @@ Gestion d'un parking :
 
 A FAIRE :
 - zone de debordement
-- faire en sorte que des usager arrivent non-stop
-- parametre aleatoire sur cmb de tmps ils stationnent
+- faire en sorte que des usager arrivent non-stop --> FAIT mais à vérifier
+- parametre aleatoire sur cmb de tmps ils stationnent --> FAIT mais à vérifier
