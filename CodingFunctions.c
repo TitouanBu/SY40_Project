@@ -189,3 +189,18 @@ void printAction(char* message_p, int id_p, int pos_p)
 	}
 	
 }
+
+// Fonction pour attendre un temps aléatoire compris entre 0 et max secondes
+void attente_aleatoire(int max)
+{
+	srand(time(NULL));
+	int nbalea=rand()%max+1;
+	sleep(nbalea);
+}
+
+// Fonction pour obtenir un boolean aléatoirement
+bool boolean_aleatoire()
+{
+	srand(time(NULL));
+	return rand() & 1;
+}

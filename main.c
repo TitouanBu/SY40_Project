@@ -11,6 +11,7 @@ Heure temps;
 int countB = 0;
 int nbAttInt = 0;
 int nbAttExt = 0;
+long numThread = 0;
 
 int nbPlaceLibreParking(Usager u_p)
 {
@@ -156,10 +157,14 @@ void usagerExterParking(Usager* u_p)
 }
 
 //Fonction executee par chaque abonne
-void *fonc_usager(int id_p)
+void *fonc_usager(void * arg)
 {
 	Usager u;
-	if(id_p < NB_ABONNE){
+	long *tab = (long *) arg;
+	long id_p = tab[0];
+	long isAbonne = tab[1];
+
+	if(isAbonne == 1){
 		u = initAbonne(id_p);
 		//printf("\nCréation Thread Abonne n°%d", u.id);
 	}else{
@@ -175,7 +180,8 @@ void *fonc_usager(int id_p)
 	}else{
 		pthread_mutex_unlock(&mutex);
 		usagerExterParking(&u);
-		sleep(10); //temps de stationnement sur la place de parking
+		//sleep(10); //temps de stationnement sur la place de parking
+		attente_aleatoire(12);
 		usagerInterParking(&u);
 	}
 }
@@ -183,6 +189,27 @@ void *fonc_usager(int id_p)
 //Fonction pour créer N abonne(s)
 void create_threads()
 {
+	long *tab[2]={0};
+	while(true){
+		tab[0]=numThread;
+		attente_aleatoire(3);
+		if(boolean_aleatoire()){
+			tab[1]=1;
+			if(pthread_create(tidUsager+numThread,0,(void *(*)())fonc_usager, (void *) tab) == -1)
+			{
+				debug("Creation thread abonne");
+			}
+		}else{
+			tab[1]=0;
+			if(pthread_create(tidUsager+numThread,0,(void *(*)())fonc_usager, (void *) tab) == -1)
+			{
+				debug("Creation thread non-abonne");
+			}
+		}
+		numThread++;
+	}
+
+	/*
 	for (long i = 0; i < NB_ABONNE; ++i)
 	{
 		if(pthread_create(tidUsager+i,0,(void *(*)())fonc_usager, (void *) i) == -1)
@@ -200,16 +227,19 @@ void create_threads()
 		}
 		usleep(10000);
 	}
+	*/
 }
 
 //Fonction pour créer N abonne(s)
 void end_threads()
 {
-	for(int i=0;i<NB_ABONNE;++i)
+	for(int i=0;i<numThread;++i)
         	pthread_join(tidUsager[i],NULL);
 
+    /*
 	for(int i=NB_ABONNE;i<NB_USAGER;++i)
         	pthread_join(tidUsager[i],NULL);
+    */
 }
 
 //Fonction thread du chrono
@@ -219,19 +249,19 @@ void *fonc_chrono()
 	{
 		sleep(1);
 		temps.min += 10;
-		if(temps.min == 60){
+		if(temps.min >= 60){
 			temps.min = 00;
 			temps.h++;
-			if(temps.h == 24){
+			if(temps.h >= 24){
 				temps.h = 0;
 			}
 		}
 
 		//afficher chrono
 		if(temps.min == 0){
-			printf("%dh0%d\n", temps.h, temps.min);
+			printf("\n%dh0%d\n", temps.h, temps.min);
 		}else{
-			printf("%dh%d\n", temps.h, temps.min);
+			printf("\n%dh%d\n", temps.h, temps.min);
 		}	
 	}
 }
@@ -257,7 +287,11 @@ int main(int argc, char const *argv[])
 	{
 		// si au moins 1 argument
 		temps.h = atoi(argv[1]);
-		temps.min = atoi(argv[2]);
+		if(argc==3){
+			temps.min = atoi(argv[2]);
+		}else{
+			temps.min = 00;
+		}
 		printf("\nduree choisit : %dh%d\n", temps.h, temps.min);
 	}else{
 		// si aucun argument
@@ -275,13 +309,15 @@ int main(int argc, char const *argv[])
 	// Initialisation Parking //
 	initParking(parking);
 
-	//create_chrono();
+	create_chrono();
 	if(AFFICHE_ACTION){
 		printf("\n\n\tExterieur Parking\t\tInterieur Parking\n");
 	}
-	create_threads();
-	end_threads();
-	//end_chrono();
+	while(true){
+		create_threads();
+		end_threads();
+	}
+	end_chrono();
 	
 	printf("\n\n----- Fin Simulation! -----\n");
 	return 0;
