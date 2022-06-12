@@ -17,11 +17,11 @@
 #define false  0
 #define true  1
 #define DEBUG true //Variable pour afficher ou non les debugs
-#define AFFICHE_ACTION false //Variable pour afficher ou non les actions des utilisateurs 
-#define AFFICHE_PARKING !AFFICHE_ACTION //Variable pour afficher ou non le parking
+#define AFFICHE_ACTION true //Variable pour afficher ou non les actions des utilisateurs 
+#define AFFICHE_PARKING true //Variable pour afficher ou non le parking
 
-#define NUM_P_ABONNE 10	//Nombre de places réservées aux abonnés
-#define NUM_P_NABONNE 15 //Nombre de places pour non abonnés
+#define NUM_P_ABONNE 2	//Nombre de places réservées aux abonnés
+#define NUM_P_NABONNE 3 //Nombre de places pour non abonnés
 #define NUM_P NUM_P_NABONNE + NUM_P_ABONNE //Nombre de place totale
 #define NB_ABONNE 6 //Nombre de thread abonnés
 #define NB_NABONNE 4 //Nombre de thread non abonnés

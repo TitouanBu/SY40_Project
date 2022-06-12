@@ -134,7 +134,7 @@ void printParking(PlaceParking* parking_p)
 {
 	if(AFFICHE_PARKING)
 	{
-		system("clear");
+		//system("clear");
 		int count = 0;
 		printf("\n  |");
 		for(int i = 0; i < NUM_P; i++)
@@ -148,6 +148,8 @@ void printParking(PlaceParking* parking_p)
 			}
 		
 		}
+		printf("\n");
+		fflush(stdout);
 	}
 }
 
@@ -181,13 +183,14 @@ void printAction(char* message_p, int id_p, int pos_p)
 {
 	if(AFFICHE_ACTION)
 	{
-		if(pos_p == 0)
-			printf("\n  U%d : %s", id_p, message_p);
+		if(pos_p == 0){
+			printf("\t\t\t\t\t\t\t\t\t\tU%d : %s\n", id_p, message_p);
+		}
 
-		if(pos_p == 1)
-			printf("\n\t\t\t\t\tU%d : %s", id_p, message_p);
+		if(pos_p == 1){
+			printf("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tU%d : %s\n", id_p, message_p);
+		}
 	}
-	
 }
 
 // Fonction pour attendre un temps aléatoire compris entre 0 et max secondes

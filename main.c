@@ -69,7 +69,7 @@ void usagerInterParking(Usager* u_p)
 	/* Liberer le stationnement */
 	circuler(u_p);
 	printAction("Quitte sa place", u_p->id, 1);
-	printParking(parking);
+	//printParking(parking);
 	fflush(stdout);
 
 	pthread_mutex_unlock(&mutex);
@@ -135,7 +135,7 @@ void usagerExterParking(Usager* u_p)
 	// cherche un stationnement et se gare
 	chercheStationnement(u_p);
 	printAction("Se gare sur une place", u_p->id, 0);
-	printParking(parking);
+	//printParking(parking);
 	fflush(stdout);
 
 	/* Signal pour l'usager suivant */
@@ -161,8 +161,8 @@ void *fonc_usager(void * arg)
 {
 	Usager u;
 	long *tab = (long *) arg;
-	long id_p = tab[0];
-	long isAbonne = tab[1];
+	long id_p = (long)tab[0];
+	long isAbonne = (long)tab[1];
 
 	if(isAbonne == 1){
 		u = initAbonne(id_p);
@@ -189,7 +189,7 @@ void *fonc_usager(void * arg)
 //Fonction pour créer N abonne(s)
 void create_threads()
 {
-	long *tab[2]={0};
+	long tab[2]={0};
 	while(true){
 		tab[0]=numThread;
 		attente_aleatoire(3);
@@ -257,12 +257,17 @@ void *fonc_chrono()
 			}
 		}
 
+		
 		//afficher chrono
+		//system("clear");
 		if(temps.min == 0){
-			printf("\n%dh0%d\n", temps.h, temps.min);
+			printf("\n\n\r%dh0%d\n", temps.h, temps.min);
+			fflush(stdout);
 		}else{
-			printf("\n%dh%d\n", temps.h, temps.min);
-		}	
+			printf("\n\n\r%dh%d\n", temps.h, temps.min);
+			fflush(stdout);
+		}
+		printParking(parking);		
 	}
 }
 
@@ -305,13 +310,13 @@ int main(int argc, char const *argv[])
 	sa.sa_handler = &handle_sigint;
 	sa.sa_flags = 0;
 	sigaction(SIGINT, &sa, NULL);
-
+	system("clear");
 	// Initialisation Parking //
 	initParking(parking);
 
 	create_chrono();
 	if(AFFICHE_ACTION){
-		printf("\n\n\tExterieur Parking\t\tInterieur Parking\n");
+		printf("\t\t\t\t\t\t\t\t\t\tExterieur du parking\t\t\tInterieur du parking");
 	}
 	while(true){
 		create_threads();
