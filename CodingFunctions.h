@@ -17,12 +17,13 @@
 #define true  1
 #define DEBUG true //Variable pour afficher ou non les debugs
 #define AFFICHE_ACTION false //Variable pour afficher ou non les debugs
+#define AFFICHE_PARKING true //Variable pour afficher ou non les debugs
 
-#define NUM_P_ABONNE 15	//Nombre de places réservées aux abonnés
-#define NUM_P_NABONNE 25 //Nombre de places pour non abonnés
+#define NUM_P_ABONNE 2	//Nombre de places réservées aux abonnés
+#define NUM_P_NABONNE 3 //Nombre de places pour non abonnés
 #define NUM_P NUM_P_NABONNE + NUM_P_ABONNE //Nombre de place totale
-#define NB_ABONNE 12 //Nombre de thread abonnés
-#define NB_NABONNE 35 //Nombre de thread non abonnés
+#define NB_ABONNE 6 //Nombre de thread abonnés
+#define NB_NABONNE 4 //Nombre de thread non abonnés
 #define NB_USAGER NB_ABONNE + NB_NABONNE //Nombre de thread
 /*--------------------------------------------------*/
 
@@ -42,6 +43,12 @@ typedef struct PlaceParking
 	bool isAbonne; //true si place réservé aux abonnés
 	int idUsager; //id de l'usager sur la place (-1 si aucun)
 }PlaceParking;
+
+typedef struct Heure
+{
+	int min; //les minutes
+	int h; //les heures
+}Heure;
 
 /*--------------------------------------*/
 

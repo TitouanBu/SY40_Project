@@ -127,39 +127,27 @@ void printPlaceParking(PlaceParking place_p)
 			}
 		}
 	}
-
-
-	/*
-	printf("\n\nPlace n°%d :", place_p.id);
-	if(place_p.isAbonne){
-		printf("\n\tPlace Abonne : Oui");
-	}else{
-		printf("\n\tPlace Abonne : Non");
-	}
-	if(place_p.isLibre){
-		printf("\n\tEtat : Libre");
-	}else{
-		printf("\n\tEtat : Occupe");
-	}
-	*/
 }
 
 // afficher les caractéristiques de tout le parking
 void printParking(PlaceParking* parking_p)
 {
-	system("clear");
-	int count = 0;
-	printf("\n  |");
-	for(int i = 0; i < NUM_P; i++)
+	if(AFFICHE_PARKING)
 	{
-		printPlaceParking(parking_p[i]);
-		if(count == 9 && i < NUM_P-1){
-			count = 0;
-			printf("\n  |");
-		}else{
-			count++;
-		}
+		system("clear");
+		int count = 0;
+		printf("\n  |");
+		for(int i = 0; i < NUM_P; i++)
+		{
+			printPlaceParking(parking_p[i]);
+			if(count == 9 && i < NUM_P-1){
+				count = 0;
+				printf("\n  |");
+			}else{
+				count++;
+			}
 		
+		}
 	}
 }
 
