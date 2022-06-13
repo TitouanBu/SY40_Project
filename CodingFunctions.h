@@ -21,7 +21,7 @@
 #define AFFICHE_PARKING true //Variable pour afficher ou non le parking
 
 #define NUM_P_ABONNE 2	//Nombre de places réservées aux abonnés
-#define NUM_P_NABONNE 2 //Nombre de places pour non abonnés
+#define NUM_P_NABONNE 3 //Nombre de places pour non abonnés
 #define NUM_P NUM_P_NABONNE + NUM_P_ABONNE //Nombre de place totale
 #define NB_ABONNE 6 //Nombre de thread abonnés
 #define NB_NABONNE 4 //Nombre de thread non abonnés

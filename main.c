@@ -270,16 +270,15 @@ void *fonc_chrono()
 		}
 		if (temps.h == 18)
 		{
-			debordement = NUM_P/2;
-		}else if(temps.h == 19){
-			debordement = NUM_P/3;
-		}else if(temps.h == 20){
-			debordement = NUM_P/4;
-		}else if(temps.h == 21){
-			debordement = NUM_P/5;
+			debordement = NUM_P*(1/2);
+		}else if(temps.h>18){
+			if(debordement > 0){
+				debordement --;
+			}
 		}else{
 			debordement = 0;
 		}
+		printf("debordement : %d, Place Parking : %d\n",debordement, NUM_P);
 		printParking(parking);		
 	}
 }
