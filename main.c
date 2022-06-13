@@ -13,6 +13,8 @@ int nbAttInt = 0;
 int nbAttExt = 0;
 long numThread = 0;
 
+int debordement = 0;
+
 int nbPlaceLibreParking(Usager u_p)
 {
 	int i = 0, count = 0;
@@ -68,7 +70,7 @@ void usagerInterParking(Usager* u_p)
 {
 	/* Liberer le stationnement */
 	circuler(u_p);
-	printAction("Quitte sa place", u_p->id, 1);
+	printAction("Quitte sa place", u_p->id, 1, u_p->isAbonne);
 	//printParking(parking);
 	fflush(stdout);
 
@@ -77,19 +79,19 @@ void usagerInterParking(Usager* u_p)
 	if(countB > 0)
 	{
 		nbAttInt++;
-		printAction("Patiente", u_p->id, 1);
+		printAction("Patiente", u_p->id, 1, u_p->isAbonne);
 		pthread_cond_wait(&patienterInt, &mutex);
 		nbAttInt--;
 	}
 
 	/* Passage de la barriere*/
 	countB++; // accède à la barrière
-	printAction("Accede à la barriere", u_p->id, 1);
+	printAction("Accede à la barriere", u_p->id, 1, u_p->isAbonne);
 	pthread_mutex_unlock(&mutex);
 	sleep(1); //temps pour passer la barriere
 	pthread_mutex_lock(&mutex);
 	countB--; // s'eloigne de la barrière
-	printAction("Sort du parking", u_p->id, 1);
+	printAction("Sort du parking", u_p->id, 1, u_p->isAbonne);
 
 	/* Signal pour l'usager suivant */
 	// si un usager de l'interieur attend
@@ -117,24 +119,24 @@ void usagerExterParking(Usager* u_p)
 	if(countB > 0)
 	{
 		nbAttExt++;
-		printAction("Patiente", u_p->id, 0);
+		printAction("Patiente", u_p->id, 0, u_p->isAbonne);
 		pthread_cond_wait(&patienterExt, &mutex);
 		nbAttExt--;
 	}
 
 	/* Passage de la barriere*/
 	countB++; // accède à la barrière
-	printAction("Accede à la barriere", u_p->id, 0);
+	printAction("Accede à la barriere", u_p->id, 0, u_p->isAbonne);
 	pthread_mutex_unlock(&mutex);
 	sleep(1); //temps pour passer la barriere
 	pthread_mutex_lock(&mutex);
 	countB--; // s'eloigne la barriere
-	printAction("Entre dans le parking", u_p->id, 0);
+	printAction("Entre dans le parking", u_p->id, 0, u_p->isAbonne);
 
 	/* Se garer */
 	// cherche un stationnement et se gare
 	chercheStationnement(u_p);
-	printAction("Se gare sur une place", u_p->id, 0);
+	printAction("Se gare sur une place", u_p->id, 0, u_p->isAbonne);
 	//printParking(parking);
 	fflush(stdout);
 
@@ -176,7 +178,7 @@ void *fonc_usager(void * arg)
 	int cond = nbPlaceLibreParking(u) - nbAttExt - countB;
 	if(cond <= 0){
 		pthread_mutex_unlock(&mutex);
-		printAction("Part (aucune place libre)", u.id, 0);
+		printAction("Part (aucune place libre)", u.id, 0, u.isAbonne);
 	}else{
 		pthread_mutex_unlock(&mutex);
 		usagerExterParking(&u);
@@ -186,7 +188,7 @@ void *fonc_usager(void * arg)
 	}
 }
 
-//Fonction pour créer N abonne(s)
+//Fonction pour générer les threads User 
 void create_threads()
 {
 	long tab[2]={0};
@@ -257,7 +259,6 @@ void *fonc_chrono()
 			}
 		}
 
-		
 		//afficher chrono
 		//system("clear");
 		if(temps.min == 0){
@@ -266,6 +267,18 @@ void *fonc_chrono()
 		}else{
 			printf("\n\n\r%dh%d\n", temps.h, temps.min);
 			fflush(stdout);
+		}
+		if (temps.h == 18)
+		{
+			debordement = NUM_P/2;
+		}else if(temps.h == 19){
+			debordement = NUM_P/3;
+		}else if(temps.h == 20){
+			debordement = NUM_P/4;
+		}else if(temps.h == 21){
+			debordement = NUM_P/5;
+		}else{
+			debordement = 0;
 		}
 		printParking(parking);		
 	}

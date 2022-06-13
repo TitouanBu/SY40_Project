@@ -179,16 +179,26 @@ int stationner(Usager* usager_p, PlaceParking* place_p)
 }
 
 // Gere l'affichage des messages d'actions
-void printAction(char* message_p, int id_p, int pos_p)
+void printAction(char* message_p, int id_p, int pos_p, bool isAbonne)
 {
 	if(AFFICHE_ACTION)
 	{
 		if(pos_p == 0){
-			printf("\t\t\t\t\t\t\t\t\t\tU%d : %s\n", id_p, message_p);
+			if (isAbonne)
+			{
+				printf("\t\t\t\t\t\t\t\t\t\tU%d(A) : %s\n", id_p, message_p);
+			}else{
+				printf("\t\t\t\t\t\t\t\t\t\tU%d : %s\n", id_p, message_p);
+			}
 		}
 
 		if(pos_p == 1){
-			printf("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tU%d : %s\n", id_p, message_p);
+			if (isAbonne)
+			{
+				printf("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tU%d(A) : %s\n", id_p, message_p);
+			}else{
+				printf("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\tU%d : %s\n", id_p, message_p);
+			}
 		}
 	}
 }
