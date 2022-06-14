@@ -66,6 +66,13 @@ int circuler(Usager* usager_p)
 	return 0;
 }
 
+int calculDebordement(int div)
+{
+	float deb = NUM_P;
+	deb/=div;
+	return (int) deb;
+}
+
 void usagerInterParking(Usager* u_p)
 {
 	/* Liberer le stationnement */
@@ -270,11 +277,17 @@ void *fonc_chrono()
 		}
 		if (temps.h == 18)
 		{
-			debordement = NUM_P*(1/2);
-		}else if(temps.h>18){
-			if(debordement > 0){
-				debordement --;
-			}
+			debordement = calculDebordement(2);
+		}else if(temps.h==19){
+			debordement = calculDebordement(3);
+		}else if(temps.h==20){
+			debordement = calculDebordement(4);
+		}else if(temps.h==21){
+			debordement = calculDebordement(5);
+		}else if(temps.h==22){
+			debordement = calculDebordement(6);
+		}else if(temps.h==23){
+			debordement = calculDebordement(7);
 		}else{
 			debordement = 0;
 		}
