@@ -182,7 +182,7 @@ void *fonc_usager(void * arg)
 	}
 
 	pthread_mutex_lock(&mutex);
-	int cond = nbPlaceLibreParking(u) - nbAttExt - countB;
+	int cond = nbPlaceLibreParking(u) - nbAttExt - countB - debordement;
 	if(cond <= 0){
 		pthread_mutex_unlock(&mutex);
 		printAction("Part (aucune place libre)", u.id, 0, u.isAbonne);
