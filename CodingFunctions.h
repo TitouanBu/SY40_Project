@@ -20,8 +20,8 @@
 #define AFFICHE_ACTION true //Variable pour afficher ou non les actions des utilisateurs 
 #define AFFICHE_PARKING true //Variable pour afficher ou non le parking
 
-#define NUM_P_ABONNE 2	//Nombre de places réservées aux abonnés
-#define NUM_P_NABONNE 0 //Nombre de places pour non abonnés
+#define NUM_P_ABONNE 8	//Nombre de places réservées aux abonnés
+#define NUM_P_NABONNE 12 //Nombre de places pour non abonnés
 #define NUM_P NUM_P_NABONNE + NUM_P_ABONNE //Nombre de place totale
 #define NB_ABONNE 6 //Nombre de thread abonnés
 #define NB_NABONNE 4 //Nombre de thread non abonnés
@@ -53,12 +53,14 @@ typedef struct Heure
 
 /*--------------------------------------*/
 
+
 /*------ Fonction de debug ------*/
 void debug (char *message);
 
-/*------ Fonction pour la gestion de SIGINT ------*/
 
+/*------ Fonction pour la gestion de SIGINT ------*/
 void handle_sigint(int sig);
+
 
 /*------ Fonctions pour les Usagers ------*/
 
@@ -85,15 +87,17 @@ void initParking(PlaceParking* parking_p);
 // afficher les caractéristiques d'une place de parking
 void printPlaceParking(PlaceParking place_p);
 
-// afficher les caractéristiques de tout le parking
-void printParking(PlaceParking* parking_p);
 
-// Permet à un Usager de se garer sur une place de parking si
-// les conditions sont respectées
-int stationner(Usager* usager_p, PlaceParking* place_p);
+/*------ Fonctions d'affichage ------*/
 
 // Gere l'affichage des messages d'actions
 void printAction(char* message_p, int id_p, int pos_p, bool isAbonne);
+
+// afficher les caractéristiques de tout le parking
+void printParking(PlaceParking* parking_p);
+
+
+/*------ Fonctions d'aléatoire ------*/
 
 // Fonction pour attendre un temps aléatoire compris entre 0 et max secondes
 void attente_aleatoire(int max);

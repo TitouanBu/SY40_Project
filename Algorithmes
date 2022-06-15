@@ -1,0 +1,81 @@
+--------------- Usager Exterieur ---------------
+
+Lock(mutex)
+Si (countB > 1) Alors
+	nbAttExt++
+	Unlock(mutex)
+	Ext.wait
+	Lock(mutex)
+	nbAttExt--
+Fsi
+
+countB++ //accède barrière
+Unlock(mutex)
+attendre(2) //simule le temps passé à la barrière
+Lock(mutex)
+countB-- //s'éloigne de la barrière
+ChercheStationnement() //cherche un stationnement
+
+Si (nbAttInt > 0) Alors
+	Unlock(mutex)
+	Int.signal
+Sinon
+	Si (nbAttExt > 0) Alors
+		Unlock(mutex)
+		Ext.signal
+	Sinon
+		Unlock(mutex)
+	Fsi
+Fsi
+
+
+
+
+--------------- Usager Interieur ---------------
+
+Circuler() //quitte le stationnement
+
+Lock(mutex)
+Si (countB > 1) Alors
+	nbAttInt++
+	Unlock(mutex)
+	Ext.wait
+	Lock(mutex)
+	nbAttInt--
+Fsi
+
+countB++ //accède barrière
+Unlock(mutex)
+attendre(2) //simule le temps passé à la barrière
+Lock(mutex)
+countB-- //s'éloigne de la barrière
+
+Si (nbAttInt > 0) Alors
+	Unlock(mutex)
+	Int.signal
+Sinon
+	Si (nbAttExt > 0) Alors
+		Unlock(mutex)
+		Ext.signal
+	Sinon
+		Unlock(mutex)
+	Fsi
+Fsi
+
+
+--------------- Fonction Usagers ---------------
+
+InitialisationUsager() //initialiser un Usager
+
+Lock(mutex)
+condition <-- nbAttExt - countB - debordement
+
+Si (condition <= 0) Alors
+	Unlock(mutex)
+	// Usager part car aucune place libre
+Sinon
+	Unlock(mutex)
+	UsagerExterieur()
+	TempsDeStationnement()
+	UsagerInterieur()
+Fsi

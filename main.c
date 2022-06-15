@@ -11,10 +11,13 @@ Heure temps;
 int countB = 0;
 int nbAttInt = 0;
 int nbAttExt = 0;
+int debordement = 0;
 long numThread = 0;
 
-int debordement = 0;
 
+/*------ Fonctions liées aux usagers et au parking ------*/
+
+// retourne le nombre de place de parking libre pour un usager
 int nbPlaceLibreParking(Usager u_p)
 {
 	int i = 0, count = 0;
@@ -34,6 +37,46 @@ int nbPlaceLibreParking(Usager u_p)
 	return count;
 }
 
+// permet à un Usager de se garer sur une place de parking si les conditions sont respectées
+int stationner(Usager* usager_p, PlaceParking* place_p)
+{
+	//si usager n'est pas déjà stationner
+	if(usager_p->stationnement != -1)
+	{
+		//Usager deja garer, arret de la fonction
+		//printf("\nUsager n°%d est déjà garer!\n", usager_p->id);
+		return 1;
+	}
+
+	//si la place est libre
+	if(place_p->idUsager == -1)
+	{
+		// si place abonne, on verifie que usager est abonne
+		if(!(place_p->isAbonne && !usager_p->isAbonne)){
+			place_p->idUsager = usager_p->id;
+			usager_p->stationnement = place_p->id;
+			return 0;
+		}
+	}
+	return 1;
+}
+
+// permet à un usager de quitter sa place de parking
+int circuler(Usager* usager_p)
+{
+	if(usager_p->stationnement == -1)
+	{
+		//Usager n'est pas garer, arret de la fonction
+		//printf("\nUsager n°%d n'est pas gare!\n", usager_p->id);
+		return 1;
+	}
+
+	parking[usager_p->stationnement].idUsager = -1;
+	usager_p->stationnement = -1;
+	return 0;
+}
+
+// permet à un usager de chercher une place libre puis de stationner dessus
 void chercheStationnement(Usager* u_p)
 {
 	int i = 0;
@@ -52,20 +95,9 @@ void chercheStationnement(Usager* u_p)
 	}
 }
 
-int circuler(Usager* usager_p)
-{
-	if(usager_p->stationnement == -1)
-	{
-		//Usager n'est pas garer, arret de la fonction
-		//printf("\nUsager n°%d n'est pas gare!\n", usager_p->id);
-		return 1;
-	}
+/*------ Fonction du débordement ------*/
 
-	parking[usager_p->stationnement].idUsager = -1;
-	usager_p->stationnement = -1;
-	return 0;
-}
-
+// calcul le debordement en fonction de ?
 int calculDebordement(int div)
 {
 	float deb = NUM_P;
@@ -73,6 +105,9 @@ int calculDebordement(int div)
 	return (int) deb;
 }
 
+/*------ Fonctions thread Usager/Parking ------*/
+
+// gère la relation usager-parking à l'intèrieur du parking
 void usagerInterParking(Usager* u_p)
 {
 	/* Liberer le stationnement */
@@ -118,6 +153,7 @@ void usagerInterParking(Usager* u_p)
 	}
 }
 
+// gère la relation usager-parking à l'extèrieur du parking
 void usagerExterParking(Usager* u_p)
 {
 
@@ -165,7 +201,7 @@ void usagerExterParking(Usager* u_p)
 	}
 }
 
-//Fonction executee par chaque abonne
+//Fonction thread usager
 void *fonc_usager(void * arg)
 {
 	Usager u;
@@ -195,7 +231,7 @@ void *fonc_usager(void * arg)
 	}
 }
 
-//Fonction pour générer les threads User 
+//Fonction pour générer les threads usager 
 void create_threads()
 {
 	long tab[2]={0};
@@ -217,41 +253,19 @@ void create_threads()
 		}
 		numThread++;
 	}
-
-	/*
-	for (long i = 0; i < NB_ABONNE; ++i)
-	{
-		if(pthread_create(tidUsager+i,0,(void *(*)())fonc_usager, (void *) i) == -1)
-		{
-			debug("Creation thread abonne");
-		}	
-		usleep(10000);
-	}
-
-	for (long i = NB_ABONNE; i < NB_USAGER; ++i)
-	{
-		if(pthread_create(tidUsager+i,0,(void *(*)())fonc_usager, (void *) i) == -1)
-		{
-			debug("Creation thread non-abonne");
-		}
-		usleep(10000);
-	}
-	*/
 }
 
-//Fonction pour créer N abonne(s)
+//Fonction pour terminer les threads usager
 void end_threads()
 {
 	for(int i=0;i<numThread;++i)
         	pthread_join(tidUsager[i],NULL);
-
-    /*
-	for(int i=NB_ABONNE;i<NB_USAGER;++i)
-        	pthread_join(tidUsager[i],NULL);
-    */
 }
 
-//Fonction thread du chrono
+
+/*------ Fonctions thread chrono ------*/
+
+//Fonction du thread du chrono
 void *fonc_chrono()
 {
 	while(true)
@@ -266,8 +280,6 @@ void *fonc_chrono()
 			}
 		}
 
-		//afficher chrono
-		//system("clear");
 		if(temps.min == 0){
 			printf("\n\n\r%dh0%d\n", temps.h, temps.min);
 			fflush(stdout);
@@ -296,7 +308,7 @@ void *fonc_chrono()
 	}
 }
 
-//Fonction pour créer N abonne(s)
+//Fonction pour créer le thread chrono
 void create_chrono()
 {
 	if(pthread_create(&tidChrono,0,(void *(*)())fonc_chrono,NULL) == -1)
@@ -305,11 +317,14 @@ void create_chrono()
 	}
 }
 
-//Fonction pour créer N abonne(s)
+//Fonction pour terminer le thread chrono
 void end_chrono()
 {
     pthread_join(tidChrono,NULL);
 }
+
+
+/*---------------- Main ----------------*/
 
 int main(int argc, char const *argv[])
 {
@@ -336,6 +351,7 @@ int main(int argc, char const *argv[])
 	sa.sa_flags = 0;
 	sigaction(SIGINT, &sa, NULL);
 	system("clear");
+
 	// Initialisation Parking //
 	initParking(parking);
 
@@ -352,27 +368,3 @@ int main(int argc, char const *argv[])
 	printf("\n\n----- Fin Simulation! -----\n");
 	return 0;
 }
-
-
-/*
-	printf("\n\n");
-	for (int i = 0; i <= 24*6; ++i)
-	{
-		usleep(1000000);
-		printf("\r%d minutes ecoulees ...",i*10);
-		fflush(stdout);
-	}
-*/
-
-/*
-	Usager u0 = initAbonne(0);
-	modifUsager(&u0, true, -1);
-	chercheStationnement(&u0);
-	circuler(&u1);
-	printParking(parking);
-	if(isParkingPlein(u3)){
-		printf("\n\n OUI \n");
-	}else{
-		printf("\n\n NON \n");
-	}
-*/

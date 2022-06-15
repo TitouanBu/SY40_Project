@@ -153,31 +153,6 @@ void printParking(PlaceParking* parking_p)
 	}
 }
 
-// Permet à un Usager de se garer sur une place de parking si
-// les conditions sont respectées
-int stationner(Usager* usager_p, PlaceParking* place_p)
-{
-	//si usager n'est pas déjà stationner
-	if(usager_p->stationnement != -1)
-	{
-		//Usager deja garer, arret de la fonction
-		//printf("\nUsager n°%d est déjà garer!\n", usager_p->id);
-		return 1;
-	}
-
-	//si la place est libre
-	if(place_p->idUsager == -1)
-	{
-		// si place abonne, on verifie que usager est abonne
-		if(!(place_p->isAbonne && !usager_p->isAbonne)){
-			place_p->idUsager = usager_p->id;
-			usager_p->stationnement = place_p->id;
-			return 0;
-		}
-	}
-	return 1;
-}
-
 // Gere l'affichage des messages d'actions
 void printAction(char* message_p, int id_p, int pos_p, bool isAbonne)
 {
