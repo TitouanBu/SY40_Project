@@ -2,7 +2,7 @@
 
 pthread_mutex_t mutex;
 pthread_cond_t patienterInt, patienterExt;
-pthread_t tidUsager[NB_USAGER];
+pthread_t tidUsager[NUM_P];
 pthread_t tidChrono;
 
 PlaceParking parking[NUM_P];
@@ -97,7 +97,10 @@ void chercheStationnement(Usager* u_p)
 
 /*------ Fonction du débordement ------*/
 
-// calcul le debordement en fonction de ?
+// calcul le debordement en fonction du nombre total de place du parking et de l'heure
+// A 18h, le nombre de place "enlevée" par le débordement est égale à NUM_P/2
+// A 19h, le nombre de place "enlevée" par le débordement est égale à NUM_P/3
+// Ainsi de suite jusqu'à minuit puis debordement = 0 jusqu'à 18h le lendemain
 int calculDebordement(int div)
 {
 	float deb = NUM_P;
