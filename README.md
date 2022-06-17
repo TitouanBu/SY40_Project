@@ -9,9 +9,11 @@
 Pour un meilleur affichage et donc une meilleure compréhension du déroulement du programme, l'utilisation dans un terminal en plein écran est recommandée.
 
 ## Les options lors du lancement 
-Le programme peut simplement être lancé sans arguments ("./prog"), on peut lui donner un argument qui représentera l'heure du début du programme ("./prog 17" lancera le programme à 17h -heure de la simulation), un deuxième argument représentera les minutes ("./prog 17 30" lancera le programme à 17h 30min -heure de la simulation). 
-Le nombre de place du parking peuvent être personnalisées dans le fichier CodingFunctions.h :
-- NUM_P_ABONNE représente le nombre de places réservées aux abonnés
-- NUM_P_NABONNE représente le nombre de places sans type (abonné et non-abonné)
-
+- Le programme peut simplement être lancé sans arguments ("./prog"). Les valeurs par défaut seront alors : Heure de début 14h00 et Nombre de places pour abonné = 2 et Nombre de places pour non abonné = 4.
+- On peut aussi quatres arguments :
+	- Le premier représente le Nombre de place abonné que l'on souhaite
+	- Le deuxième représente le Nombre de place non-abonné que l'on souhaite
+	- Le troisième représente l'heure à laquelle on souhaite démarrer la simulation
+	- Le quatrième représente les minutes dans l'heure
+Exemple : ./prog a b c d --> lancera le programme avec (Nombre Place abonné = a | Nombre Place non-abonné = b | Heure de début : c heures d minutes)
 
