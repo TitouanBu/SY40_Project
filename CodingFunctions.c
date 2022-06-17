@@ -11,16 +11,6 @@ void debug (char *message)
 
 /*------Fonctions pour gestion des threads ------*/
 
-
-
-/*------ Fonctions pour gestion de SIGINT ------*/
-
-void handle_sigint(int sig){
-	//end_threads();
-	printf("\n\n----- Fin Simulation! -----\n");
-	exit(0);
-}
-
 /*------ Fonctions pour les Usagers ------*/
 
 // initialiser un abonne
@@ -82,7 +72,7 @@ PlaceParking initPlaceParking(int id_p, bool isAbonne_p, int idUsager_p)
 }
 
 // initialiser un parking
-void initParking(PlaceParking* parking_p)
+void initParking(PlaceParking* parking_p,int NUM_P_ABONNE, int NUM_P)
 {
 	int i = 0;
 	// initialisation au début du parking des places abonnés
@@ -130,7 +120,7 @@ void printPlaceParking(PlaceParking place_p)
 }
 
 // afficher les caractéristiques de tout le parking
-void printParking(PlaceParking* parking_p)
+void printParking(PlaceParking* parking_p,int NUM_P)
 {
 	if(AFFICHE_PARKING)
 	{
