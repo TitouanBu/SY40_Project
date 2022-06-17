@@ -2,10 +2,10 @@
 
 pthread_mutex_t mutex;
 pthread_cond_t patienterInt, patienterExt;
-pthread_t tidUsager[NUM_P];
+pthread_t* tidUsager;
 pthread_t tidChrono;
 
-PlaceParking parking[NUM_P];
+PlaceParking* parking;
 Heure temps;
 
 int countB = 0;
@@ -13,7 +13,9 @@ int nbAttInt = 0;
 int nbAttExt = 0;
 int debordement = 0;
 long numThread = 0;
-
+int NUM_P_ABONNE = 2;
+int NUM_P_NABONNE = 4;
+int NUM_P;
 
 /*------ Fonctions liées aux usagers et au parking ------*/
 
@@ -224,7 +226,7 @@ void *fonc_usager(void * arg)
 	int cond = nbPlaceLibreParking(u) - nbAttExt - countB - debordement;
 	if(cond <= 0){
 		pthread_mutex_unlock(&mutex);
-		printAction("Part (aucune place libre)", u.id, 0, u.isAbonne);
+		printAction("Part (0 place ou trop de monde à la barrière)", u.id, 0, u.isAbonne);
 	}else{
 		pthread_mutex_unlock(&mutex);
 		usagerExterParking(&u);
@@ -307,7 +309,7 @@ void *fonc_chrono()
 			debordement = 0;
 		}
 		printf("debordement : %d, Place Parking : %d\n",debordement, NUM_P);
-		printParking(parking);		
+		printParking(parking, NUM_P);		
 	}
 }
 
@@ -326,6 +328,16 @@ void end_chrono()
     pthread_join(tidChrono,NULL);
 }
 
+/*------ Fonctions pour gestion de SIGINT ------*/
+
+void handle_sigint(int sig){
+	//end_threads();
+	//end_chrono();
+	free(parking);
+	free(tidUsager);
+	printf("\n\n----- Fin Simulation! -----\n");
+	exit(0);
+}
 
 /*---------------- Main ----------------*/
 
@@ -333,12 +345,31 @@ int main(int argc, char const *argv[])
 {
 	if (argc >= 2)
 	{
-		// si au moins 1 argument
-		temps.h = atoi(argv[1]);
-		if(argc==3){
-			temps.min = atoi(argv[2]);
-		}else{
-			temps.min = 00;
+		if(atoi(argv[1])>0){
+			NUM_P_ABONNE = atoi(argv[1]);
+		}
+		if (argc >= 3)
+		{
+			if(atoi(argv[2])>0){
+				NUM_P_NABONNE = atoi(argv[2]);
+			}
+			if (argc >= 4)
+			{
+				if (atoi(argv[3])>= 0 && atoi(argv[3])<24)
+				{
+					temps.h = atoi(argv[3]);
+				}
+				if (argc >= 5)
+				{
+					if (atoi(argv[4])>= 0 && atoi(argv[4])<24)
+					{
+						temps.min = atoi(argv[3]);
+					}
+				}
+			}else{
+				temps.h = 14;
+				temps.min = 0;
+			}
 		}
 		printf("\nduree choisit : %dh%d\n", temps.h, temps.min);
 	}else{
@@ -355,9 +386,11 @@ int main(int argc, char const *argv[])
 	sigaction(SIGINT, &sa, NULL);
 	system("clear");
 
+	NUM_P = NUM_P_ABONNE + NUM_P_NABONNE;
+	parking = malloc(sizeof(PlaceParking) * NUM_P);
+	tidUsager = malloc(sizeof(pthread_t) * NUM_P);
 	// Initialisation Parking //
-	initParking(parking);
-
+	initParking(parking,NUM_P_ABONNE,NUM_P);
 	create_chrono();
 	if(AFFICHE_ACTION){
 		printf("\t\t\t\t\t\t\t\t\t\tExterieur du parking\t\t\tInterieur du parking");
